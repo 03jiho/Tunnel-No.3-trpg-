@@ -207,6 +207,9 @@
     font-family:'Gowun Batang',serif;
   }
   .act-btn .sub{display:block; font-size:11.5px; color:var(--text-faint); margin-top:3px; font-family:'IBM Plex Mono',monospace;}
+  .act-btn .sub .chance{color:var(--gold);}
+  .act-btn .emo{margin-right:4px;}
+  .bg-card .bonus{display:block; font-size:11px; color:var(--gold); margin-top:2px; font-family:'IBM Plex Mono',monospace;}
   .act-btn:hover{border-color:var(--lamp); background:#1c150e;}
   .act-btn.dig{border-color:var(--rust);}
   .act-btn.retreat{border-color:var(--park-with); color:var(--park-with);}
@@ -426,16 +429,33 @@
   var STAT_MAX = 4;
 
   var BACKGROUNDS = [
-    { id:"miner", name:"전직 광부", desc:"채굴에 실패해도 손해가 적다",
+    { id:"miner", name:"전직 광부", desc:"채굴에 실패해도 손해가 적다", bonusLabel:"완력 +1",
       flavor:"당신은 한때 이 근처 광산에서 십 년을 일했다. 갱도의 습관, 지지목이 우는 소리 — 몸이 먼저 기억한다." },
-    { id:"hardened", name:"산전수전 다 겪은 사람", desc:"공포에도 흔들리지 않는 순간이 한 번 있다",
+    { id:"hardened", name:"산전수전 다 겪은 사람", desc:"공포에도 흔들리지 않는 순간이 한 번 있다", bonusLabel:"냉정 +1",
       flavor:"이보다 더한 일도 겪어봤다. 어둠 속에서도 쉽게 무너지지 않는 편이다." },
-    { id:"shaman", name:"무당의 손녀", desc:"위험을 감지하는 감각이 남다르다",
+    { id:"shaman", name:"무당의 손녀", desc:"위험을 감지하는 감각이 남다르다", bonusLabel:"직감 +1",
       flavor:"할머니는 늘 말씀하셨다 — 이상한 낌새를 그냥 지나치지 말라고. 그 말버릇이 몸에 뱄다." },
-    { id:"friend", name:"박씨와 구면", desc:"그를 위험에 빠뜨리는 첫 순간만은 피해간다",
+    { id:"friend", name:"박씨와 구면", desc:"그를 위험에 빠뜨리는 첫 순간만은 피해간다", bonusLabel:"관계 회복의 실마리",
       flavor:"사실 박씨와는 초면이 아니다. 예전에 몇 번 같이 일한 적이 있다. 그 정도 믿음은 있다." }
   ];
   var selectedBackground = null;
+
+  // 배경별 능력치 보너스. 박씨와 구면은 수치 보너스 대신 전용 이벤트로 보상한다.
+  var BACKGROUND_BONUS = { miner:{완력:1}, hardened:{냉정:1}, shaman:{직감:1}, friend:{} };
+
+  var MINER_REMARKS = [
+    "당신은 이런 지형을 안다. 지지목이 우는 소리, 벽의 색깔 — 몸이 먼저 반응한다.",
+    "오래된 버릇이 나온다. 곡괭이 각도를 살짝 틀자 손끝의 저항이 달라진다.",
+    "이 흙빛, 낯익다. 예전 광산에서도 이런 결의 벽을 본 적이 있다.",
+    "경력이 어디 가지 않는다. 어디를 내려쳐야 할지, 눈보다 손이 먼저 안다."
+  ];
+
+  var SHAMAN_DREAD_LINES = [
+    "할머니 목소리가 귓가를 스친다. \"거긴 아니다, 얘야.\"",
+    "어릴 때부터 익숙한 한기가 목덜미를 스친다. 귀신들이 웅성거리고 있다.",
+    "보이지 않는 손이 어깨를 지그시 누른다 — 가지 말라는 뜻 같다.",
+    "저편에서 낮은 곡소리가 들린다. 죽은 광부들의 소리다."
+  ];
 
   var SHAFTS = [
     null,
@@ -451,9 +471,8 @@
         intro:["구석에 녹슨 철제 궤짝이 놓여 있다. 자물쇠는 부서져 있다.","무너진 잔해 틈에 반쯤 묻힌 나무 상자가 보인다."],
         choices:[
           { label:"조심스럽게 연다", sub:"완력 판정 DC 11", resolve:function(){
-            var dc=11, r=roll("완력");
-            appendLog("roll", null, "완력 판정 — d20("+r.d+") + "+stats.완력+" = "+r.total+" / DC "+dc+" → "+(r.total>=dc?"성공":"실패"));
-            if(r.total>=dc){
+            var dc=11;
+            if(doRoll("완력", dc)){
               game.gold += 2;
               appendLog("narrative","궤짝", "안에는 오래된 작업 도구와 함께 잔돈처럼 남은 금 부스러기가 있다.");
               appendLog("gold", null, "금 +2돈 (총 "+game.gold+"돈)");
@@ -489,9 +508,8 @@
         intro:["갱도 한쪽이 무릎 높이까지 물에 잠겨 있다. 건너야 할 것 같다.","천장에서 떨어지는 물이 작은 웅덩이를 이뤘다. 그 안에서 뭔가 반짝인다."],
         choices:[
           { label:"물속을 뒤진다", sub:"완력 판정 DC 13", resolve:function(){
-            var dc=13, r=roll("완력");
-            appendLog("roll", null, "완력 판정 — d20("+r.d+") + "+stats.완력+" = "+r.total+" / DC "+dc+" → "+(r.total>=dc?"성공":"실패"));
-            if(r.total>=dc){
+            var dc=13;
+            if(doRoll("완력", dc)){
               game.gold += 3;
               appendLog("narrative","물길", "차가운 물속에서 손끝에 걸리는 묵직한 감촉 — 금이다.");
               appendLog("gold", null, "금 +3돈 (총 "+game.gold+"돈)");
@@ -504,9 +522,8 @@
             appendLog("narrative","물길", "굳이 젖을 필요는 없다. 돌아서 지나간다.");
           }},
           { label:"냉정을 발휘해 침착히 건넌다", sub:"냉정 판정 DC 12", resolve:function(){
-            var dc=12, r=roll("냉정");
-            appendLog("roll", null, "냉정 판정 — d20("+r.d+") + "+stats.냉정+" = "+r.total+" / DC "+dc+" → "+(r.total>=dc?"성공":"실패"));
-            if(r.total>=dc){
+            var dc=12;
+            if(doRoll("냉정", dc)){
               appendLog("narrative","물길", "숨을 고르며 조심스레 건넌다. 별일 아니라고, 스스로에게 되뇐다.");
             } else {
               appendLog("narrative","물길", "발을 헛디뎌 크게 첨벙인다. 심장이 잠시 요란하게 뛴다.");
@@ -541,9 +558,8 @@
             appendLog("narrative","유품", "짧은 묵념 후, 그대로 두고 자리를 지나친다.");
           }},
           { label:"박씨와 함께 확인한다", sub:"냉정 판정 DC 14", resolve:function(){
-            var dc=14, r=roll("냉정");
-            appendLog("roll", null, "냉정 판정 — d20("+r.d+") + "+stats.냉정+" = "+r.total+" / DC "+dc+" → "+(r.total>=dc?"성공":"실패"));
-            if(r.total>=dc){
+            var dc=14;
+            if(doRoll("냉정", dc)){
               appendLog("narrative","유품", "박씨와 나란히 앉아 잠시 숨을 고른다. \"우리는 나갈 수 있어.\" 그 말이 마음을 조금 가볍게 한다.");
               addCorruption(-1);
             } else {
@@ -569,9 +585,8 @@
         intro:["길이 두 갈래로 갈라진다. 왼쪽은 좁고 가파르며, 오른쪽은 넓지만 흙탕물이 흥건하다.","누군가 세워둔 나무 표지판이 쓰러져 있다. 화살표는 지워졌다."],
         choices:[
           { label:"왼쪽, 좁은 길로 간다", sub:"직감 판정 DC 14", resolve:function(){
-            var dc=14, r=roll("직감");
-            appendLog("roll", null, "직감 판정 — d20("+r.d+") + "+stats.직감+" = "+r.total+" / DC "+dc+" → "+(r.total>=dc?"성공":"실패"));
-            if(r.total>=dc){
+            var dc=14;
+            if(doRoll("직감", dc)){
               game.gold += 3;
               appendLog("narrative","갈림길", "좁은 틈 사이로 지름길을 찾아낸다. 벽을 스치며 금맥 한 조각을 발견했다.");
               appendLog("gold", null, "금 +3돈 (총 "+game.gold+"돈)");
@@ -606,9 +621,8 @@
         intro:["어둠 속에서 누군가 당신의 이름을 부른다. 아니, 이름이 아니다 — 그냥 '거기 누구요'다.","곡괭이 소리가 아주 가까이서 들린다. 하지만 이 갱도엔 당신과 박씨뿐이다."],
         choices:[
           { label:"대답한다", sub:"냉정 판정 DC 16", resolve:function(){
-            var dc=16, r=roll("냉정");
-            appendLog("roll", null, "냉정 판정 — d20("+r.d+") + "+stats.냉정+" = "+r.total+" / DC "+dc+" → "+(r.total>=dc?"성공":"실패"));
-            if(r.total>=dc){
+            var dc=16;
+            if(doRoll("냉정", dc)){
               appendLog("narrative","목소리", "대답을 건네자, 소리는 잦아든다. 그저 갱도가 우는 소리였을지도 모른다.");
             } else {
               appendLog("narrative","목소리", "대답이 목에 걸린다. 아무도 없는데, 분명 뭔가 대답한 것 같았다.");
@@ -619,9 +633,8 @@
             appendLog("narrative","목소리", "돌아보지 않는 편이 나을 때도 있다.");
           }},
           { label:"그 목소리를 따라가 본다", sub:"직감 판정 DC 16", resolve:function(){
-            var dc=16, r=roll("직감");
-            appendLog("roll", null, "직감 판정 — d20("+r.d+") + "+stats.직감+" = "+r.total+" / DC "+dc+" → "+(r.total>=dc?"성공":"실패"));
-            if(r.total>=dc){
+            var dc=16;
+            if(doRoll("직감", dc)){
               game.gold += 5;
               appendLog("narrative","목소리", "소리를 따라간 자리, 누군가 숨겨둔 작은 파우치가 있다. 안에는 금이 가득하다.");
               appendLog("gold", null, "금 +5돈 (총 "+game.gold+"돈)");
@@ -678,8 +691,8 @@
       card.className = "bg-card";
       card.type = "button";
       card.setAttribute("aria-pressed", selectedBackground===bg.id ? "true" : "false");
-      card.innerHTML = "<span class='nm'>"+bg.name+"</span><span class='ds'>"+bg.desc+"</span>";
-      card.addEventListener("click", function(){ selectedBackground = bg.id; renderBackgrounds(); updateStartButton(); });
+      card.innerHTML = "<span class='nm'>"+bg.name+"</span><span class='ds'>"+bg.desc+"</span><span class='bonus'>"+bg.bonusLabel+"</span>";
+      card.addEventListener("click", function(){ selectedBackground = bg.id; renderBackgrounds(); renderStatRows(); updateStartButton(); });
       wrap.appendChild(card);
     });
   }
@@ -690,12 +703,14 @@
     STATS.forEach(function(k){
       var row = document.createElement("div");
       row.className = "stat-row";
+      var bonus = (BACKGROUND_BONUS[selectedBackground] && BACKGROUND_BONUS[selectedBackground][k]) || 0;
+      var numDisplay = stats[k] + (bonus ? " <small style='color:var(--gold)'>+"+bonus+"</small>" : "");
       row.innerHTML =
         '<span class="nm">'+k+'</span>' +
         '<span class="desc">'+STAT_DESC[k]+'</span>' +
         '<span class="stepper">' +
           '<button type="button" data-act="dec" data-k="'+k+'">−</button>' +
-          '<span class="n mono">'+stats[k]+'</span>' +
+          '<span class="n mono">'+numDisplay+'</span>' +
           '<button type="button" data-act="inc" data-k="'+k+'">＋</button>' +
         '</span>';
       wrap.appendChild(row);
@@ -723,6 +738,14 @@
   }
 
   // ---------- dice ----------
+  function bgBonus(key, bg){
+    var b = BACKGROUND_BONUS[bg];
+    return (b && b[key]) || 0;
+  }
+  function effStat(key){
+    var bg = game ? game.background : selectedBackground;
+    return stats[key] + bgBonus(key, bg);
+  }
   function roll(statKey){
     var adv = statKey === "직감" && game && game.background === "shaman";
     var d = 1 + Math.floor(Math.random()*20);
@@ -730,10 +753,62 @@
       var d2 = 1 + Math.floor(Math.random()*20);
       d = Math.max(d, d2);
     }
-    return { d:d, total:d+stats[statKey] };
+    var mod = effStat(statKey);
+    return { d:d, mod:mod, total:d+mod };
   }
+  function rollAndLog(statKey, dc){
+    var r = roll(statKey);
+    var ok = r.total >= dc;
+    appendLog("roll", null, statKey+" 판정 — d20("+r.d+") + "+r.mod+" = "+r.total+" / DC "+dc+" → "+(ok?"성공":"실패"));
+    return { r:r, ok:ok };
+  }
+  function doRoll(statKey, dc){ return rollAndLog(statKey, dc).ok; }
   function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
   function randInt(min,max){ return min + Math.floor(Math.random()*(max-min+1)); }
+
+  // ---------- success % (for TRPG-unfamiliar players) ----------
+  function statChance(statKey, dc){
+    var mod = effStat(statKey);
+    var threshold = dc - mod;
+    var p;
+    if(threshold <= 1) p = 1;
+    else if(threshold > 20) p = 0;
+    else p = (21 - threshold) / 20;
+    if(statKey === "직감" && (game ? game.background : selectedBackground) === "shaman"){
+      p = 1 - Math.pow(1-p, 2);
+    }
+    return Math.round(p*100);
+  }
+  function annotateSub(sub){
+    if(!sub) return sub;
+    return sub.replace(/(완력|냉정|직감) 판정 DC (\d+)/, function(m, stat, dcStr){
+      var dc = parseInt(dcStr,10);
+      var pct = statChance(stat, dc);
+      return stat+" 판정 DC "+dc+" <span class='chance'>(성공 확률 "+pct+"%)</span>";
+    });
+  }
+
+  // ---------- choice emoji ----------
+  function subEmoji(label, sub){
+    label = label || ""; sub = sub || "";
+    if(label.indexOf("무리해서")!==-1) return "💀";
+    if(label.indexOf("다독인다")!==-1 || label.indexOf("옛 기억")!==-1) return "🤝";
+    if(label.indexOf("함께 탈출")!==-1) return "🤝";
+    if(label.indexOf("버리고")!==-1) return "💔";
+    if(label.indexOf("돌아간다")!==-1) return "🚪";
+    if(label.indexOf("분석")!==-1) return "⛏️";
+    if(label.indexOf("여쭤")!==-1 || label.indexOf("할머니")!==-1) return "🔮";
+    if(sub.indexOf("판정 DC")!==-1) return "🎲";
+    if(sub.indexOf("판정 없이 성공")!==-1) return "✨";
+    if(sub.indexOf("정보만")!==-1) return "🔍";
+    if(sub.indexOf("금")!==-1) return "💰";
+    if(sub==="안전") return "🛡️";
+    return "🕯️";
+  }
+  function btnHtml(label, sub){
+    var emo = subEmoji(label, sub);
+    return "<span class='emo'>"+emo+"</span>"+label + (sub ? "<span class='sub'>"+annotateSub(sub)+"</span>" : "");
+  }
 
   // ---------- log ----------
   function appendLog(type, headText, bodyText){
@@ -801,10 +876,11 @@
   function maybeDread(){
     if(game.corruption < 3) return;
     if(Math.random() > 0.42) return;
-    appendLog("dread","기척", pick(DREAD_LINES));
+    var lines = (game.background === "shaman" && Math.random() < 0.6) ? SHAMAN_DREAD_LINES : DREAD_LINES;
+    appendLog("dread","기척", pick(lines));
     var dc = 10 + game.corruption;
     var r = roll("냉정");
-    appendLog("roll", null, "냉정 판정 — d20("+r.d+") + "+stats.냉정+" = "+r.total+" / DC "+dc);
+    appendLog("roll", null, "냉정 판정 — d20("+r.d+") + "+r.mod+" = "+r.total+" / DC "+dc);
     if(r.total >= dc){
       appendLog("system", null, "심장이 뛰지만, 숨을 고르며 다시 곡괭이를 쥔다.");
     } else if(game.background === "hardened" && !game.hardenedUsed){
@@ -829,12 +905,17 @@
       appendLog("park","박씨", "당신과 박씨 사이엔 아직 믿음이 남아있다. 그는 이번만은 크게 흔들리지 않는다.");
       return;
     }
+    game.parkStayedTrue = false;
     if(game.park === "with"){
       game.park = "endangered";
       appendLog("park","박씨", "박씨의 눈빛이 달라졌다. 더는 당신을 완전히 믿지 않는 눈치다.");
     } else if(game.park === "endangered"){
+      // 관계가 바닥까지 무너지면, 박씨도 더는 참지 않는다 — 배신
       game.park = "lost";
-      appendLog("park","박씨", "박씨가 무너지는 잔해에 휩쓸린다. 당신은… 손을 뻗지 않았다.");
+      var stolen = Math.max(1, Math.round(game.gold * 0.3));
+      game.gold = Math.max(0, game.gold - stolen);
+      appendLog("park","박씨", "박씨의 눈에 남아있던 마지막 믿음마저 사라진다. \"너 혼자 다 가지겠다는 거지.\" 그가 순식간에 당신 자루에서 금을 낚아채더니, 어둠 속으로 사라진다.");
+      appendLog("gold", null, "금 -"+stolen+"돈 (박씨가 가져감, 총 "+game.gold+"돈)");
     }
     renderHud();
   }
@@ -842,7 +923,7 @@
   function doMendPark(){
     game.parkRepaired = true;
     var dc = 13, r = roll("냉정");
-    appendLog("roll", null, "냉정 판정 — d20("+r.d+") + "+stats.냉정+" = "+r.total+" / DC "+dc+" → "+(r.total>=dc?"성공":"실패"));
+    appendLog("roll", null, "냉정 판정 — d20("+r.d+") + "+r.mod+" = "+r.total+" / DC "+dc+" → "+(r.total>=dc?"성공":"실패"));
     if(r.total >= dc){
       game.park = "with";
       appendLog("park","박씨", "진심 어린 말 몇 마디에 박씨의 눈빛이 풀린다. 다시, 함께다.");
@@ -858,7 +939,8 @@
     game = {
       shaft:1, gold:0, corruption:0, park:"with", betrayed:false, collapseWarned:false, ended:false,
       investigated:{}, background:selectedBackground, hardenedUsed:false, parkShieldUsed:false,
-      parkRepaired:false, sensedThisShaft:false
+      parkRepaired:false, sensedThisShaft:false,
+      minerAnalysisUsed:false, shamanGuideUsed:false, friendReconcileUsed:false, parkStayedTrue:true
     };
     $("intro-screen").hidden = true;
     $("game-screen").hidden = false;
@@ -866,6 +948,9 @@
 
     var bg = BACKGROUNDS.find(function(b){ return b.id === selectedBackground; });
     if(bg) appendLog("system", null, bg.flavor);
+    if(selectedBackground === "friend"){
+      appendLog("system", null, "박씨가 당신을 보고 피식 웃는다. \"진짜 왔네. 신기하다, 우리가 또 여기서 만날 줄이야.\"");
+    }
 
     enterShaft();
   }
@@ -881,11 +966,16 @@
     var r = roll("직감");
     var sensed = r.total >= dcSense;
     game.sensedThisShaft = sensed;
-    appendLog("roll", null, "직감 판정 — d20("+r.d+") + "+stats.직감+" = "+r.total+" / DC "+dcSense);
+    appendLog("roll", null, "직감 판정 — d20("+r.d+") + "+r.mod+" = "+r.total+" / DC "+dcSense);
     if(sensed){
       appendLog("hint","예감", pick(sh.hints));
     } else {
       appendLog("system", null, "특별한 낌새는 느껴지지 않는다.");
+    }
+
+    // 이스터에그: '제3갱'에서 주사위가 3이 나오면
+    if(game.shaft === 3 && r.d === 3){
+      appendLog("dread","숫자", "셋. 안전모도 셋, 손자국도 셋 — 그리고 지금 당신이 선 갱도 이름도 '제3갱'이다. 우연이라기엔, 너무 많다.");
     }
 
     presentEncounter();
@@ -899,15 +989,16 @@
     var wrap = $("actions");
     wrap.innerHTML = "";
     var choices = enc.choices.slice();
-    if(sh.hiddenChoice && stats[sh.hiddenChoice.stat] >= sh.hiddenChoice.min){
+    if(sh.hiddenChoice && effStat(sh.hiddenChoice.stat) >= sh.hiddenChoice.min){
       choices.push(sh.hiddenChoice);
     }
     choices.forEach(function(choice){
       var btn = document.createElement("button");
       btn.className = "act-btn encounter";
-      btn.innerHTML = choice.label + (choice.sub ? "<span class='sub'>"+choice.sub+"</span>" : "");
+      btn.innerHTML = btnHtml(choice.label, choice.sub);
       btn.addEventListener("click", function(){
         choice.resolve();
+        renderHud();
         if(game.ended) return;
         maybeIntrude();
         if(game.ended) return;
@@ -927,21 +1018,56 @@
       var done = !!seen[item.id];
       var btn = document.createElement("button");
       btn.className = "act-btn" + (done ? " done" : "");
-      btn.innerHTML = (done ? "다시 보기 · "+item.label : item.label) + "<span class='sub'>안전 · 정보만 얻는다</span>";
+      var label = done ? "다시 보기 · "+item.label : item.label;
+      btn.innerHTML = btnHtml(label, "안전 · 정보만 얻는다");
       btn.addEventListener("click", function(){ doInvestigate(item.id); });
       wrap.appendChild(btn);
     });
 
     var digBtn = document.createElement("button");
     digBtn.className = "act-btn dig";
-    digBtn.innerHTML = "캔다<span class='sub'>완력 판정 DC "+sh.dc+" · 금 획득 · 타락 +1</span>";
+    digBtn.innerHTML = btnHtml("캔다", "완력 판정 DC "+sh.dc+" · 금 획득 · 타락 +1");
     digBtn.addEventListener("click", function(){ doDig(false); });
     wrap.appendChild(digBtn);
+
+    // 전직 광부: 전문 지식으로 지질을 분석해 위험 없이 금을 확보한다 (1회)
+    if(game.background === "miner" && !game.minerAnalysisUsed){
+      var minerBtn = document.createElement("button");
+      minerBtn.className = "act-btn encounter";
+      minerBtn.innerHTML = btnHtml("전문 지식으로 지질을 분석한다", "전직 광부의 감 · 판정 없이 성공");
+      minerBtn.addEventListener("click", function(){
+        game.minerAnalysisUsed = true;
+        var g = sh.goldMin;
+        game.gold += g;
+        appendLog("narrative","분석", "벽의 결과 색을 읽는다. 예전에 수도 없이 봐온 무늬다 — 정확히 그 자리를 짚어낸다.");
+        appendLog("gold", null, "금 +"+g+"돈 (총 "+game.gold+"돈)");
+        renderHud();
+        renderActions();
+      });
+      wrap.appendChild(minerBtn);
+    }
+
+    // 무당의 손녀: 할머니께 마음속으로 여쭈어 금의 위치를 알아낸다 (1회)
+    if(game.background === "shaman" && !game.shamanGuideUsed){
+      var shamanBtn = document.createElement("button");
+      shamanBtn.className = "act-btn encounter";
+      shamanBtn.innerHTML = btnHtml("할머니께 마음속으로 여쭤본다", "무당 할머니의 인도 · 판정 없이 성공");
+      shamanBtn.addEventListener("click", function(){
+        game.shamanGuideUsed = true;
+        var g = sh.goldMax;
+        game.gold += g;
+        appendLog("narrative","인도", "눈을 감자 할머니의 목소리가 또렷이 들린다. \"저짝, 그늘진 데를 봐라.\" 그 말대로 손을 뻗자 금이 잡힌다.");
+        appendLog("gold", null, "금 +"+g+"돈 (총 "+game.gold+"돈)");
+        renderHud();
+        renderActions();
+      });
+      wrap.appendChild(shamanBtn);
+    }
 
     if(game.corruption >= 6 && game.park !== "lost"){
       var greedBtn = document.createElement("button");
       greedBtn.className = "act-btn greed";
-      greedBtn.innerHTML = "무리해서 확실히 캔다<span class='sub'>박씨를 위험에 내몬다 · 판정 없이 성공 · 타락 +2</span>";
+      greedBtn.innerHTML = btnHtml("무리해서 확실히 캔다", "박씨를 위험에 내몬다 · 판정 없이 성공 · 타락 +2");
       greedBtn.addEventListener("click", function(){ doDig(true); });
       wrap.appendChild(greedBtn);
     }
@@ -949,14 +1075,30 @@
     if(game.park === "endangered" && !game.parkRepaired){
       var mendBtn = document.createElement("button");
       mendBtn.className = "act-btn mend";
-      mendBtn.innerHTML = "박씨를 다독인다<span class='sub'>냉정 판정 DC 13 · 관계 회복 시도 (1회)</span>";
+      mendBtn.innerHTML = btnHtml("박씨를 다독인다", "냉정 판정 DC 13 · 관계 회복 시도 (1회)");
       mendBtn.addEventListener("click", function(){ doMendPark(); });
       wrap.appendChild(mendBtn);
     }
 
+    // 박씨와 구면: 옛 기억을 함께 떠올리며 판정 없이 관계를 회복하는 히든 선택지 (1회)
+    if(game.background === "friend" && game.park === "endangered" && !game.friendReconcileUsed){
+      var reconBtn = document.createElement("button");
+      reconBtn.className = "act-btn mend";
+      reconBtn.innerHTML = btnHtml("옛 기억을 함께 떠올린다", "박씨와의 옛정 · 판정 없이 성공 · 관계 회복");
+      reconBtn.addEventListener("click", function(){
+        game.friendReconcileUsed = true;
+        game.parkRepaired = true;
+        game.park = "with";
+        appendLog("park","박씨", "\"우리 그때 기억나?\" 옛날 함께 일하던 이야기를 꺼내자, 박씨의 굳었던 얼굴이 스르르 풀린다. \"그래… 우리 사이에 이게 뭐라고.\"");
+        renderHud();
+        renderActions();
+      });
+      wrap.appendChild(reconBtn);
+    }
+
     var retreatBtn = document.createElement("button");
     retreatBtn.className = "act-btn retreat";
-    retreatBtn.innerHTML = "돌아간다<span class='sub'>지금까지 캔 금을 갖고 탈출한다</span>";
+    retreatBtn.innerHTML = btnHtml("돌아간다", "지금까지 캔 금을 갖고 탈출한다");
     retreatBtn.addEventListener("click", function(){ attemptRetreat(); });
     wrap.appendChild(retreatBtn);
   }
@@ -991,6 +1133,7 @@
       game.gold += bonus;
       appendLog("narrative","무리한 채굴", "당신은 박씨를 앞세워 위험한 자리를 대신 시킨다. 그가 비명을 지르지만, 손에는 두둑한 금이 들어온다.");
       appendLog("gold", null, "금 +"+bonus+"돈 (총 "+game.gold+"돈)");
+      renderHud();
       worsenPark();
       if(game.ended) return;
       if(addCorruption(2)) return;
@@ -1000,13 +1143,16 @@
 
     var r = roll("완력");
     var ok = r.total >= sh.dc;
-    appendLog("roll", null, "완력 판정 — d20("+r.d+") + "+stats.완력+" = "+r.total+" / DC "+sh.dc+" → "+(ok?"성공":"실패"));
+    appendLog("roll", null, "완력 판정 — d20("+r.d+") + "+r.mod+" = "+r.total+" / DC "+sh.dc+" → "+(ok?"성공":"실패"));
 
     if(ok){
       var g1 = randInt(sh.goldMin, sh.goldMax);
       game.gold += g1;
       appendLog("narrative","채굴", pick(sh.digOk));
       appendLog("gold", null, "금 +"+g1+"돈 (총 "+game.gold+"돈)");
+      if(game.background === "miner" && Math.random() < 0.5){
+        appendLog("system", null, pick(MINER_REMARKS));
+      }
       renderHud();
       if(addCorruption(1)) return;
     } else {
@@ -1039,7 +1185,7 @@
 
       var withBtn = document.createElement("button");
       withBtn.className = "act-btn retreat";
-      withBtn.textContent = "박씨와 함께 탈출한다";
+      withBtn.innerHTML = "<span class='emo'>🤝</span>박씨와 함께 탈출한다";
       withBtn.addEventListener("click", function(){
         appendLog("park","박씨", "당신은 박씨의 손을 잡아끌고 함께 갱도를 빠져나온다.");
         endGame("retreat");
@@ -1048,11 +1194,13 @@
 
       var betrayBtn = document.createElement("button");
       betrayBtn.className = "act-btn greed";
-      betrayBtn.textContent = "박씨를 버리고 혼자 탈출한다";
+      betrayBtn.innerHTML = "<span class='emo'>💔</span>박씨를 버리고 혼자 탈출한다";
       betrayBtn.addEventListener("click", function(){
         game.park = "lost";
         game.betrayed = true;
+        game.parkStayedTrue = false;
         appendLog("park","박씨", "박씨의 비명이 뒤에서 들리지만, 당신은 뒤돌아보지 않는다.");
+        renderHud();
         endGame("retreat");
       });
       wrap.appendChild(betrayBtn);
@@ -1065,6 +1213,13 @@
   function endGame(reason){
     if(game.ended) return;
     game.ended = true;
+
+    // 박씨와 끝까지 관계를 지켰다면, 그가 마지막까지 챙긴 몫을 나눠준다
+    var parkBonus = 0;
+    if(reason === "retreat" && game.park === "with" && game.parkStayedTrue && !game.betrayed){
+      parkBonus = 2;
+      game.gold += parkBonus;
+    }
 
     var key = "modest";
     if(reason === "swallowed"){
@@ -1096,7 +1251,14 @@
     scr.className = "ending" + (key==="swallowed" ? " dark" : "");
     $("ending-eyebrow").textContent = "ENDING";
     $("ending-title").textContent = titles[key];
-    $("ending-body").innerHTML = "<p>"+bodies[key]+"</p>";
+    var bodyHtml = "<p>"+bodies[key]+"</p>";
+    if(parkBonus > 0){
+      bodyHtml += "<p class='mono' style='font-size:12.5px;color:var(--text-lo);'>박씨와 끝까지 함께한 덕분에, 그가 마지막까지 챙긴 금 "+parkBonus+"돈을 당신 몫에 보태주었다.</p>";
+    }
+    if(key !== "swallowed" && game.corruption === 3){
+      bodyHtml += "<p class='mono' style='font-size:12.5px;color:var(--text-lo);'>묘하게도, 타락 게이지는 정확히 3에서 멈췄다. '제3갱'다운 결말이다.</p>";
+    }
+    $("ending-body").innerHTML = bodyHtml;
     $("ending-gold").textContent = (key==="swallowed" ? "—" : game.gold+"돈");
     $("ending-corruption").textContent = game.corruption+"/10";
 

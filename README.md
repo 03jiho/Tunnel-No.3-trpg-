@@ -8,7 +8,9 @@
 
 ## 실행 방법
 
-`index.html` 파일을 브라우저로 열기만 하면 됩니다.
+바로 플레이: **https://03jiho.github.io/Tunnel-No.3-trpg-/**
+
+로컬에서 열려면 `index.html` 파일을 브라우저로 열면 됩니다.
 
 ```bash
 # 예시 (로컬에서 바로 열기)

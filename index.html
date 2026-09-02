@@ -1293,13 +1293,6 @@
     if(game.ended) return;
     game.ended = true;
 
-    // 박씨와 끝까지 관계를 지켰다면, 그가 마지막까지 챙긴 몫을 나눠준다
-    var parkBonus = 0;
-    if(reason === "retreat" && game.park === "with" && game.parkStayedTrue && !game.betrayed){
-      parkBonus = 2;
-      game.gold += parkBonus;
-    }
-
     var key = "modest";
     if(reason === "swallowed"){
       key = "swallowed";
@@ -1311,6 +1304,13 @@
       key = "haul";
     } else {
       key = "modest";
+    }
+
+    // 박씨와 끝까지 관계를 지켰다면, 그가 마지막까지 챙긴 몫을 나눠준다 (빈손 생환은 그대로 빈손으로 둔다)
+    var parkBonus = 0;
+    if(key !== "empty" && reason === "retreat" && game.park === "with" && game.parkStayedTrue && !game.betrayed){
+      parkBonus = 2;
+      game.gold += parkBonus;
     }
 
     var titles = {

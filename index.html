@@ -255,32 +255,21 @@
     padding:10px 0; margin:18px 0;
   }
   .best-record b{color:var(--gold-bright);}
-  .record-summary{margin-bottom:8px;}
-  .ending-checklist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px;}
-  .ending-checklist li{display:flex; align-items:baseline; gap:8px; font-size:12px;}
-  .ending-checklist .mark{flex:none; width:16px; text-align:center;}
-  .ending-checklist li.done .nm{color:var(--gold-bright); font-weight:600;}
-  .ending-checklist li.todo .nm{color:var(--text-lo);}
-  .ending-checklist .hint{color:var(--text-faint); font-size:11px; font-style:italic;}
-
-  .truth-overlay{
-    position:fixed; inset:0; z-index:60;
-    background:rgba(5,4,3,0.88);
-    display:flex; align-items:center; justify-content:center;
-    padding:20px;
+  .best-record .teaser{display:block; margin-top:6px; font-style:italic; color:var(--lamp-bright);}
+  .lore-btn{
+    display:block; width:100%; margin:0 0 18px; padding:9px 12px; text-align:left;
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.06em;
+    color:var(--lamp-bright); background:transparent; border:1px dashed var(--rust-soft);
+    cursor:pointer;
   }
-  .truth-overlay[hidden]{display:none;}
-  .truth-card{
-    background:var(--panel); color:var(--text);
-    border:1px solid var(--panel-edge); border-radius:2px;
-    max-width:560px; width:100%; max-height:88vh; overflow-y:auto;
-    padding:26px 24px 24px;
-    box-shadow:0 30px 70px -20px rgba(0,0,0,.85), 0 0 90px -30px rgba(232,163,61,.2);
+  .lore-btn:hover{border-color:var(--lamp-bright);}
+  .lore-box{
+    margin:0 0 18px; padding:14px 16px; border:1px solid var(--rust-soft);
+    background:rgba(0,0,0,.25); font-size:13.5px; line-height:1.8; color:var(--text);
   }
-  .truth-card .eyebrow{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--danger-hi);}
-  .truth-card h2{font-family:'Black Han Sans','Noto Sans KR',sans-serif; font-size:24px; margin:8px 0 16px; color:var(--lamp-bright);}
-  .truth-card p{line-height:1.9; font-size:15px; margin:0 0 14px; color:var(--text);}
-  .truth-card .btn-primary{width:100%; margin-top:6px;}
+  .lore-box p{margin:0 0 10px;}
+  .lore-box p:last-child{margin-bottom:0;}
+  .lore-box .lore-hint{font-size:11.5px; font-style:italic; color:var(--text-lo);}
 
   .stat-block{margin:18px 0;}
   .stat-block-title{
@@ -389,12 +378,13 @@
   <section id="intro-screen" class="intro">
     <div class="eyebrow">SOLO TRPG</div>
     <h1>제3갱</h1>
-    <p>1980년대, 이름 없는 폐광촌. 삼 년 전 붕괴 사고로 봉쇄된 금광 '제3갱'이 재개발로 내일이면 완전히 물에 잠긴다는 소문이 돈다. 당신은 빚에 몰린 외지인 — 마지막 기회를 노리고 몰래 철조망을 넘었다. 갱도 안에는 그날 죽은 광부들의 소문과, 누구도 확인하지 못한 진짜 금맥이 있다는 이야기가 함께 떠돈다.</p>
+    <p>1980년대, 이름 없는 폐광촌. 삼 년 전 붕괴 사고로 봉쇄된 금광 '제3갱'이 재개발로 내일이면 완전히 물에 잠긴다는 소문이 돈다. 당신은 빚에 몰린 외지인 — 마지막 기회를 노리고 몰래 철조망을 넘었다. 왜인지, 이 소문을 어디선가 들어본 것 같다는 기분을 지울 수 없다. 갱도 안에는 그날 죽은 광부들의 소문과, 누구도 확인하지 못한 진짜 금맥이 있다는 이야기가 함께 떠돈다.</p>
     <p>본래 이름이 따로 있었다는 이 광산을, 마을 사람들은 어느 순간부터 그냥 '제3갱'이라 불렀다. 사고가 난 세 번째 굴을 따서 붙은 이름이라는 사람도, 그날 죽은 이가 셋이었기 때문이라는 사람도 있다 — 정확한 유래를 아는 사람은 이제 없다.</p>
-    <p>입구에서 낯익은 그림자 하나가 말을 건다. 같은 날 몰래 숨어든 또 다른 도굴꾼, 박씨다. "혼자보단 낫겠지." 그가 웃으며 손을 내민다.</p>
+    <p id="park-intro-line">입구에서 낯익은 그림자 하나가 말을 건다. 같은 날 몰래 숨어든 또 다른 도굴꾼, 박씨다. "혼자보단 낫겠지." 그가 웃으며 손을 내민다.</p>
 
     <div class="best-record" id="best-record">최고 기록 — 아직 없음</div>
-    <button class="btn-ghost" id="truth-open" hidden style="width:100%; margin:-6px 0 18px;">진상 — 제3갱은 몇 번째인가</button>
+    <button type="button" class="lore-btn" id="lore-btn" hidden>사건의 전말</button>
+    <div class="lore-box" id="lore-box" hidden></div>
 
     <div class="stat-block">
       <div class="stat-block-title">과거 <span class="pool">하나 선택</span></div>
@@ -447,15 +437,6 @@
     <p class="mono" id="ending-record-note" style="font-size:12.5px; color:var(--text-lo);"></p>
     <button class="btn-primary" id="retry-btn">다시 잠입한다</button>
   </section>
-</div>
-
-<div class="truth-overlay" id="truth-overlay" hidden>
-  <div class="truth-card">
-    <div class="eyebrow">EPILOGUE</div>
-    <h2>진상 — 제3갱은 몇 번째인가</h2>
-    <div id="truth-body"></div>
-    <button class="btn-primary" id="truth-close">닫는다</button>
-  </div>
 </div>
 
 <script>
@@ -709,24 +690,57 @@
   ];
 
   var BEST_KEY = "je3gaeng_best";
-  var ENDINGS_KEY = "je3gaeng_endings";
-  var ENDING_ORDER = ["empty","modest","haul","swallowed","betrayer"];
-  var ENDING_LABELS = { empty:"빈손 생환", modest:"적당히 챙김", haul:"만선", swallowed:"삼켜짐", betrayer:"배신자" };
-  var ENDING_HINTS = {
-    empty:"금을 한 푼도 못 캔 채로 무사히 탈출하면",
-    modest:"타락 6 미만인 채로, 어느 정도 금을 챙겨 탈출하면",
-    haul:"타락 6 이상인 채로, 금을 챙겨 무사히 탈출하면",
-    swallowed:"타락 게이지가 10에 닿으면 (위험한 선택을 반복해보면)",
-    betrayer:"박씨가 위태로운 상태일 때, 그를 버리고 혼자 탈출하면"
-  };
+  var ENDINGS_SEEN_KEY = "je3gaeng_endings_seen";
+  var HIDDEN_SEEN_KEY = "je3gaeng_hidden_seen";
+  var BASE_ENDING_KEYS = ["empty","modest","haul","swallowed","betrayer"];
 
-  function loadAchievedEndings(){
+  function loadSeenEndings(){
     try{
-      var raw = localStorage.getItem(ENDINGS_KEY);
-      var list = raw ? JSON.parse(raw) : [];
-      return Array.isArray(list) ? list : [];
+      var arr = JSON.parse(localStorage.getItem(ENDINGS_SEEN_KEY) || "[]");
+      return Array.isArray(arr) ? arr : [];
     }catch(e){ return []; }
   }
+  function saveSeenEndings(arr){
+    try{ localStorage.setItem(ENDINGS_SEEN_KEY, JSON.stringify(arr)); }catch(e){}
+  }
+
+  // mysteryStage/hiddenEligible are fixed once per page load, from endings already seen
+  // in *previous* playthroughs — this is what makes the investigate hints, the 박씨 tell,
+  // and the hidden ending itself escalate run over run instead of all appearing at once.
+  var mysteryStage = 0;
+  var hiddenEligible = false;
+  function computeMysteryState(){
+    var seen = loadSeenEndings().filter(function(k){ return BASE_ENDING_KEYS.indexOf(k) !== -1; });
+    mysteryStage = seen.length;
+    hiddenEligible = mysteryStage >= BASE_ENDING_KEYS.length;
+  }
+
+  var LORE_REDACTED = "<p><b>사건의 전말</b></p>"+
+    "<p>삼 년 전, 제3갱이 무너지던 날 — 그 안에는 세 사람이 있었다.</p>"+
+    "<p>한 사람은 이 갱도에서 일하던 광부였다. 형편이 어려워, 가족들 몰래 여자의 몸으로 막장까지 들어와 일하고 있었다. 사고가 나던 그날도 안에 있었다. 끝내 시신조차 찾지 못했다 — 사고 현장에 남은 건 빛바랜 가족사진이 삐져나온 낡은 지갑과, 멎어버린 손목시계뿐이었다. 사진 속에서는 박씨와 그녀, 그리고 어린 두 아이가 나란히 웃고 있었다.</p>"+
+    "<p>또 한 사람, 박씨는 그녀의 남편이었다. 아내의 옷깃에 늘 묻어있던 탄가루가 마음에 걸리던 참이었다. 갱이 무너지던 순간, 그는 갱 어귀에 있었다. 주저 없이 뛰어들었다. 안쪽에 나뒹굴던 낡은 안전모를 급히 주워 쓰고, 더 깊은 곳으로 향했다.</p>"+
+    "<p>그 안에서 낯선 얼굴 하나와 마주쳤다 — 형편에 쫓겨 몰래 흘러든 또 다른 이였다. \"혼자보단 낫겠지.\" 다정한 인사가 아니었다. 혼자서는 저 어둠 속으로 더 들어갈 자신이 없다는, 두려움 섞인 한마디였다. 그는 그 손을 붙잡고 함께 더 깊이 내려갔다.</p>"+
+    "<p>더 들어간 곳에서, 등 뒤로 갱도가 다시 무너져 내렸다. 박씨는 끝내 아내를 찾지 못한 채, 갱도 가장 깊은 곳 벽에 기대앉아 숨을 거두었다. 왼손 약지, 끝마디가 없는 그 손 — 몇 해 전 결혼반지가 밧줄에 걸리며 잃은 자리였다.</p>"+
+    "<p>그날 이후로 그는 매일 밤 같은 순간을 되풀이한다. 자신이 이미 죽었다는 것도, 삼 년째 같은 밤을 되풀이하고 있다는 것도 모른 채.</p>"+
+    "<p>그리고 그날 박씨의 손을 잡고 함께 어둠 속으로 들어간 그 낯선 이는, ██████████████████████████████████████████████.</p>"+
+    "<p class=\"lore-hint\">(아직 다 드러나지 않은 진실이 있다.)</p>";
+  function buildLoreFull(){
+    var best = "0";
+    try{ best = localStorage.getItem(BEST_KEY) || "0"; }catch(e){}
+    return LORE_FULL_HEAD +
+    "<p>그리고 그날 박씨의 손을 잡고 함께 어둠 속으로 들어간 그 낯선 이는, 당신이었다.</p>"+
+    "<p>당신에게도 이유가 있었다. 빚에 쫓겨 흘러들었다지만, 사실은 두고 온 사람이 있었다 — 이번 한 번만, 이번이 진짜 마지막이면 돌아가겠다고 몇 번이고 되뇌었다. 하지만 그 '마지막'도, '내일'처럼 단 한 번도 오지 않았다.</p>"+
+    "<p>바깥의 시간은 흘렀다. 삼 년 동안 갱도는 봉쇄된 채 버려져 있었고, 이제는 정말로 내일이면 물에 잠긴다. 하지만 그 삼 년의 밤들은 당신에게 단 하루도 지나가지 않았다. 당신은 매번 다른 밤을 살아온 게 아니라, 죽던 그 밤 하나만을 계속해서 살고 있었다.</p>"+
+    "<p>최고 기록 "+best+"돈, 확인한 결말 "+BASE_ENDING_KEYS.length+"가지 — 전부 당신이 이 밤을 몇 번이고 다시 살아낸 흔적이다. 매번 다른 선택을 했다고, 매번 다른 사람으로 걸었다고 믿었겠지만, 사실 당신은 단 한 번도 이 갱도를 벗어난 적이 없다.</p>"+
+    "<p class=\"lore-hint\">지금 이 화면 아래, '다시 잠입한다' — 그 버튼이야말로 당신이 삼 년째 되풀이해온 바로 그 행위다. 누르는 순간, 당신은 다시 철조망을 넘을 것이다. 오늘 밤도.</p>";
+  }
+  var LORE_FULL_HEAD = "<p><b>사건의 전말</b></p>"+
+    "<p>삼 년 전, 제3갱이 무너지던 날 — 그 안에는 세 사람이 있었다.</p>"+
+    "<p>한 사람은 이 갱도에서 일하던 광부였다. 형편이 어려워, 가족들 몰래 여자의 몸으로 막장까지 들어와 일하고 있었다. 사고가 나던 그날도 안에 있었다. 끝내 시신조차 찾지 못했다 — 사고 현장에 남은 건 빛바랜 가족사진이 삐져나온 낡은 지갑과, 멎어버린 손목시계뿐이었다. 사진 속에서는 박씨와 그녀, 그리고 어린 두 아이가 나란히 웃고 있었다.</p>"+
+    "<p>또 한 사람, 박씨는 그녀의 남편이었다. 아내의 옷깃에 늘 묻어있던 탄가루가 마음에 걸리던 참이었다. 갱이 무너지던 순간, 그는 갱 어귀에 있었다. 주저 없이 뛰어들었다. 안쪽에 나뒹굴던 낡은 안전모를 급히 주워 쓰고, 더 깊은 곳으로 향했다.</p>"+
+    "<p>그 안에서 낯선 얼굴 하나와 마주쳤다 — 형편에 쫓겨 몰래 흘러든 또 다른 이였다. \"혼자보단 낫겠지.\" 다정한 인사가 아니었다. 혼자서는 저 어둠 속으로 더 들어갈 자신이 없다는, 두려움 섞인 한마디였다. 그는 그 손을 붙잡고 함께 더 깊이 내려갔다.</p>"+
+    "<p>더 들어간 곳에서, 등 뒤로 갱도가 다시 무너져 내렸다. 박씨는 끝내 아내를 찾지 못한 채, 갱도 가장 깊은 곳 벽에 기대앉아 숨을 거두었다. 왼손 약지, 끝마디가 없는 그 손 — 몇 해 전 결혼반지가 밧줄에 걸리며 잃은 자리였다.</p>"+
+    "<p>그날 이후로 그는 매일 밤 같은 순간을 되풀이한다. 자신이 이미 죽었다는 것도, 삼 년째 같은 밤을 되풀이하고 있다는 것도 모른 채.</p>";
 
   var game = null; // set on start
   var stats = {완력:0, 냉정:0, 직감:0};
@@ -789,26 +803,19 @@
   }
 
   function renderBestRecord(){
-    var best = null;
-    try{ best = localStorage.getItem(BEST_KEY); }catch(e){}
-    var achieved = loadAchievedEndings();
-
-    var html = '<div class="record-summary">'+(best ? ("최고 기록 — "+best+"돈 챙겨 생환") : "최고 기록 — 아직 없음")+'</div>';
-    html += '<div class="record-summary">확인한 결말 — '+achieved.length+' / '+ENDING_ORDER.length+'</div>';
-    html += '<ul class="ending-checklist">';
-    ENDING_ORDER.forEach(function(key){
-      var done = achieved.indexOf(key) !== -1;
-      html += '<li class="'+(done?'done':'todo')+'">' +
-        '<span class="mark">'+(done?'✓':'🔒')+'</span>' +
-        '<span class="nm">'+ENDING_LABELS[key]+'</span>' +
-        (done ? '' : '<span class="hint">'+ENDING_HINTS[key]+'</span>') +
-        '</li>';
-    });
-    html += '</ul>';
-    $("best-record").innerHTML = html;
-
-    var truthBtn = $("truth-open");
-    if(truthBtn) truthBtn.hidden = achieved.length < ENDING_ORDER.length;
+    var best = null, hiddenSeen = null;
+    try{ hiddenSeen = localStorage.getItem(HIDDEN_SEEN_KEY); }catch(e){}
+    var line1 = best ? ("최고 기록 — "+best+"돈 챙겨 생환") : "최고 기록 — 아직 없음";
+    line1 += " · 확인한 결말 " + mysteryStage + "/" + BASE_ENDING_KEYS.length;
+    var el = $("best-record");
+    el.textContent = "";
+    el.appendChild(document.createTextNode(line1));
+    if(hiddenEligible && !hiddenSeen){
+      var teaser = document.createElement("span");
+      teaser.className = "teaser";
+      teaser.textContent = "그런데 어딘가, 석연치 않은 기분이 남아 있다.";
+      el.appendChild(teaser);
+    }
   }
 
   // ---------- dice ----------
@@ -1193,12 +1200,40 @@
     }
   }
 
+  // escalates with mysteryStage (how many of the 5 base endings past playthroughs have already
+  // uncovered) so the same investigate spot reveals more of 박씨's — and the player's own —
+  // true nature the further along the player is, instead of dumping it all on the first run.
+  function investigateExtra(shaft, itemId){
+    if(shaft === 1 && itemId === "tools" && mysteryStage >= 1){
+      return " 곡괭이를 쥐는 손에 낯선 익숙함이 느껴진다. 처음 와보는 곳인데, 왜인지 모르겠다.";
+    }
+    if(shaft === 3 && itemId === "scratch" && mysteryStage >= 2){
+      return " 박씨가 그 글씨를 오래도록 들여다본다. 손끝으로 자획을 하나하나 짚어보다가, \"…이 글씨체, 낯이 익은데.\" 그가 낮게 중얼거린다.";
+    }
+    if(shaft === 3 && itemId === "helmets"){
+      if(mysteryStage >= 4){
+        return " 그 옆, 삭아버린 가죽 장갑 한 짝이 떨어져 있다 — 약지 부분만 유난히 해져 있다. 박씨의 그 손과 닮았다.";
+      }
+      if(mysteryStage >= 3){
+        return " 그 옆, 삭아버린 가죽 장갑 한 짝이 떨어져 있다. 손가락 부분이 유난히 해져 있다.";
+      }
+    }
+    if(shaft === 4 && itemId === "footsteps" && mysteryStage >= 4){
+      return " 발자국 크기가 어쩐지 낯설지 않다. 마치… 내 것과 닮은 것 같다.";
+    }
+    if(shaft === 5 && itemId === "bones" && hiddenEligible){
+      return " 문득 그 손이 눈에 걸린다 — 왼손 약지, 끝마디가 없다. 박씨와 같은 자리다. 등골이 서늘해진다. 그리고 문득 깨닫는다 — 이 자리, 이 자세, 어쩐지 낯설지가 않다.";
+    }
+    return "";
+  }
+
   function doInvestigate(itemId){
     var sh = SHAFTS[game.shaft];
     var item = sh.investigate.find(function(i){ return i.id === itemId; });
     if(!item) return;
     game.investigated[game.shaft][itemId] = true;
-    appendLog("narrative", item.label, item.text);
+    var text = item.text + investigateExtra(game.shaft, itemId);
+    appendLog("narrative", item.label, text);
     maybeIntrude();
     if(game.ended) return;
     renderActions();
@@ -1306,28 +1341,42 @@
       key = "modest";
     }
 
-    // 박씨와 끝까지 관계를 지켰다면, 그가 마지막까지 챙긴 몫을 나눠준다 (빈손 생환은 그대로 빈손으로 둔다)
+    var baseKey = key;
+
+    // 박씨와 끝까지 관계를 지켰다면, 그가 마지막까지 챙긴 몫을 나눠준다 (빈손 생환은 그대로 빈손으로 둔다).
+    // baseKey로 판정해야 히든엔딩으로 뒤집힌 뒤에도 원래 빈손이었던 런에는 보너스가 안 붙는다.
     var parkBonus = 0;
-    if(key !== "empty" && reason === "retreat" && game.park === "with" && game.parkStayedTrue && !game.betrayed){
+    if(baseKey !== "empty" && reason === "retreat" && game.park === "with" && game.parkStayedTrue && !game.betrayed){
       parkBonus = 2;
       game.gold += parkBonus;
     }
 
+    if(baseKey !== "swallowed" && baseKey !== "betrayer" && game.park === "with" && hiddenEligible){
+      key = "hidden";
+      try{ localStorage.setItem(HIDDEN_SEEN_KEY, "1"); }catch(e){}
+    }
+    var seenEndings = loadSeenEndings();
+    if(seenEndings.indexOf(baseKey) === -1){
+      seenEndings.push(baseKey);
+      saveSeenEndings(seenEndings);
+    }
+
     var titles = {
-      empty:"빈손 생환", modest:"적당히 챙김", haul:"만선", swallowed:"삼켜짐", betrayer:"배신자"
+      empty:"빈손 생환", modest:"적당히 챙김", haul:"만선", swallowed:"삼켜짐", betrayer:"배신자", hidden:"세 번째 안전모"
     };
     var bodies = {
       empty:"당신은 아무것도 캐지 못한 채 갱도를 빠져나왔다. 빈손이지만, 두 발로 걸어 나왔다는 것 자체가 이 갱도에서는 드문 일이다.",
       modest:"묵직한 자루를 어깨에 걸치고, 당신은 갱도를 빠져나왔다. 많지는 않지만 빚을 갚고도 남을 양이다. 박씨가 옆에서 웃는다. \"다음엔 진짜 금맥까지 가보자고.\" 당신은 웃으며 고개를 젓는다. 이 정도면 충분하다.",
       haul:"자루가 터질 듯 무겁다. 평생 손에 쥐어볼까 싶었던 금이 지금 당신 등에 있다. 하지만 갱도를 나서는 내내, 등 뒤에서 누군가 따라오는 듯한 기척을 떨칠 수 없었다. 그날 밤 이후, 당신은 종종 곡괭이질 소리에 잠에서 깬다.",
       swallowed:"귀가 먹먹해질 정도의 굉음과 함께, 갱도 전체가 무너져 내린다. 도망칠 곳은 없다. 흙과 어둠이 당신을 삼킨다. — 재개발 인부들은 다음 날, 물에 잠긴 갱도 입구에서 낡은 안전모 하나만을 발견했다.",
-      betrayer:"갱도를 빠져나와 처음 본 햇빛은 눈이 부셨다. 자루는 무겁다. 하지만 그날 이후로, 당신은 단 한 번도 그 갱도 쪽 하늘을 올려다보지 못했다."
+      betrayer:"갱도를 빠져나와 처음 본 햇빛은 눈이 부셨다. 자루는 무겁다. 하지만 그날 이후로, 당신은 단 한 번도 그 갱도 쪽 하늘을 올려다보지 못했다.",
+      hidden:"박씨와 나란히 철조망을 넘는다. 몇 번이고 반복해온 새벽이다 — 빈손이었던 밤도, 자루가 터질 듯했던 밤도, 돌아오지 못했던 밤도, 이상하게 전부 또렷이 기억난다. 백골로 남아 벽에 기대앉아 있던 그 손과, 지금 옆에서 웃고 있는 박씨의 손. 왼손 약지, 끝마디가 없는 그 손은 애초에 같은 손이었다. 입구에서 매번 듣던 그 \"혼자보단 낫겠지\"도 — 다정한 인사가 아니었다. 무너지는 갱도 속으로 아내를 찾아 뛰어들던 그가, 낯선 나를 붙잡으며 내뱉은, 두려움 섞인 한마디였다. 그는 끝내 아내를 찾지 못한 채 그 어둠에 갇혔다. 그리고 나도, 함께 남았다. 제3갱 사고 현장에 나란히 놓여 있던 안전모는 세 개였다. 하나는 그 여자의 것 — 끝내 발견되지 못했다. 하나는 박씨의 것 — 삼 년째 갱도 가장 깊은 곳에 앉아 있다. 나머지 하나는, 그날 이후 단 한 번도 이 갱도를 벗어난 적 없는 당신의 것이었다. 당신에게도 두고 온 사람이 있었다 — 이번 한 번만, 이번이 진짜 마지막이면 돌아가겠다고 몇 번이고 되뇌었다. 바깥에서는 삼 년이 흘러 내일이면 정말로 물에 잠긴다. 하지만 당신에게는, 언제나 죽던 그 밤, 오늘 밤뿐이었다. 오늘 밤도 당신은 철조망을 넘을 것이다. 언제나처럼."
     };
 
     $("game-screen").hidden = true;
     var scr = $("ending-screen");
     scr.hidden = false;
-    scr.className = "ending" + (key==="swallowed" ? " dark" : "");
+    scr.className = "ending" + (key==="swallowed" || key==="hidden" ? " dark" : "");
     $("ending-eyebrow").textContent = "ENDING";
     $("ending-title").textContent = titles[key];
     var bodyHtml = "<p>"+bodies[key]+"</p>";
@@ -1351,45 +1400,30 @@
         }
       }catch(e){}
     }
-    try{
-      var achieved = loadAchievedEndings();
-      if(achieved.indexOf(key) === -1){
-        achieved.push(key);
-        localStorage.setItem(ENDINGS_KEY, JSON.stringify(achieved));
-        notes.push(achieved.length >= ENDING_ORDER.length
-          ? "다섯 결말을 모두 확인했습니다. 시작 화면에서 '진상'을 열람할 수 있습니다."
-          : "새로운 결말을 확인했습니다. ("+achieved.length+" / "+ENDING_ORDER.length+")");
-      }
-    }catch(e){}
     $("ending-record-note").textContent = notes.join(" ");
   }
 
   // ---------- wire up ----------
-  // ---------- true ending epilogue (unlocked after all 5 endings) ----------
-  function truthEpilogueHtml(){
-    return '<p>다섯 번의 밤을 모두 겪고 나서야, 당신은 이상한 사실 하나를 깨닫는다. 다섯 번 모두 — 빈손으로 나왔든, 만선으로 나왔든, 삼켜졌든, 박씨를 버렸든 — 철조망 앞에서 당신을 맞이한 건 언제나 같은 얼굴, 같은 인사였다. "혼자보단 낫겠지."</p>' +
-      '<p>재개발 공사는 몇 년째 "내일"로 미뤄지고 있다. 마을 사람들에게 물어보면 다들 고개를 갸웃한다. 수몰 공사는 진작 끝났어야 하는데, 라고. 하지만 입구의 팻말은 여전히 걸려 있다 — "수몰 예정 — 즉시 철거". 날짜만, 볼 때마다 조용히 바뀌어 있다.</p>' +
-      '<p>제3갱이라는 이름도 다시 생각해보면 이상하다. 사고가 난 세 번째 굴이라서? 그날 죽은 이가 셋이어서? 마을 사람들 말이 저마다 다른 것도 당연하다 — 셋을 채울 때까지, 그 갱은 몇 번이고 이름을 바꿔가며 사람을 불러들였을지도 모른다. 어쩌면 당신도, 그 "셋" 중 하나로 세어지고 있었을 뿐인지 모른다.</p>' +
-      '<p>박씨는 언제나 철조망 앞에서 기다리고 있었다. 당신이 그를 버렸던 밤에도, 다음 날 누군가 다시 철조망을 넘으면 그는 아무 일 없었다는 듯 웃으며 손을 내밀 것이다 — 확인해볼 마음이 든다면 말이지만.</p>' +
-      '<p>당신이 등에 지고 나온 그 금은 정말 금이었을까. 전당포에 가져가면 정말 돈이 될까. 그건, 아무도 끝까지 확인해보지 않았다. 다만 한 가지는 분명하다 — 내일도 누군가는 빚에 몰려 이 철조망을 넘을 것이고, 박씨는 또 그 자리에서 웃으며 손을 내밀 것이다. "혼자보단 낫겠지."</p>';
-  }
-
   document.addEventListener("DOMContentLoaded", function(){
+    computeMysteryState();
+    if(hiddenEligible){
+      $("park-intro-line").textContent += " 악수를 하다 문득 눈에 띈다 — 그의 왼손 약지, 끝마디가 없다. 오래전 사고였겠거니, 더 묻지 않는다.";
+      var loreBtn = $("lore-btn");
+      loreBtn.hidden = false;
+      loreBtn.addEventListener("click", function(){
+        var box = $("lore-box");
+        if(!box.hidden){ box.hidden = true; return; }
+        var hiddenSeen = null;
+        try{ hiddenSeen = localStorage.getItem(HIDDEN_SEEN_KEY); }catch(e){}
+        box.innerHTML = hiddenSeen ? buildLoreFull() : LORE_REDACTED;
+        box.hidden = false;
+      });
+    }
     renderBackgrounds();
     renderStatRows();
     renderBestRecord();
     $("start-btn").addEventListener("click", startGame);
     $("retry-btn").addEventListener("click", function(){ location.reload(); });
-
-    $("truth-open").addEventListener("click", function(){
-      $("truth-body").innerHTML = truthEpilogueHtml();
-      $("truth-overlay").hidden = false;
-    });
-    $("truth-close").addEventListener("click", function(){ $("truth-overlay").hidden = true; });
-    $("truth-overlay").addEventListener("click", function(e){ if(e.target === $("truth-overlay")) $("truth-overlay").hidden = true; });
-    document.addEventListener("keydown", function(e){
-      if(e.key === "Escape" && !$("truth-overlay").hidden) $("truth-overlay").hidden = true;
-    });
   });
 })();
 </script>

@@ -1351,7 +1351,7 @@
       game.gold += parkBonus;
     }
 
-    if(baseKey !== "swallowed" && baseKey !== "betrayer" && game.park === "with" && hiddenEligible){
+    if((baseKey === "modest" || baseKey === "haul") && game.park === "with" && hiddenEligible){
       key = "hidden";
       try{ localStorage.setItem(HIDDEN_SEEN_KEY, "1"); }catch(e){}
     }
